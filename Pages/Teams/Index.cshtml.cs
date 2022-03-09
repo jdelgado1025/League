@@ -6,6 +6,7 @@ using League.Data;
 using League.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace League.Pages.Teams
@@ -23,6 +24,8 @@ namespace League.Pages.Teams
         public List<Division> Divisions { get; set; }
         public List<Team> Teams { get; set; }
 
+        public SelectList AllTeams { get; set; }
+
         public async Task OnGetAsync()
         {
             //Get a list of all Conferences
@@ -31,6 +34,13 @@ namespace League.Pages.Teams
             Divisions = await _context.Divisions.ToListAsync();
             //List of all Teams
             Teams = await _context.Teams.ToListAsync();
+
+            var teamIds = from tm in _context.Teams
+                          orderby tm.TeamId
+                          select tm.TeamId;
+
+            //Populate from all Team ID's
+            AllTeams = new SelectList(await teamIds.ToListAsync());
         }
 
         //All Divisions by Conference sorted by Name
