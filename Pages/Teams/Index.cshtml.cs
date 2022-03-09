@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using League.Data;
 using League.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -23,8 +24,11 @@ namespace League.Pages.Teams
         public List<Conference> Conferences { get; set; }
         public List<Division> Divisions { get; set; }
         public List<Team> Teams { get; set; }
+        public const string SessionKeyFavorite = "_Favorite";
 
         public SelectList AllTeams { get; set; }
+        [BindProperty (SupportsGet = true)]
+        public string FavoriteTeam { get; set; }
 
         public async Task OnGetAsync()
         {
@@ -41,6 +45,17 @@ namespace League.Pages.Teams
 
             //Populate from all Team ID's
             AllTeams = new SelectList(await teamIds.ToListAsync());
+
+            //Checking for new favorite on each page load and saving to the session cookie
+            if (!string.IsNullOrEmpty(FavoriteTeam))
+            {
+                HttpContext.Session.SetString(SessionKeyFavorite, FavoriteTeam);
+            }
+            //Otherwise get the old favorite or null
+            else
+            {
+                FavoriteTeam = HttpContext.Session.GetString(SessionKeyFavorite);
+            }
         }
 
         //All Divisions by Conference sorted by Name
