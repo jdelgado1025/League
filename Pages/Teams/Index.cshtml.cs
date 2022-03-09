@@ -6,6 +6,7 @@ using League.Data;
 using League.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 
 namespace League.Pages.Teams
 {
@@ -18,35 +19,30 @@ namespace League.Pages.Teams
             _context = context;
         }
 
+        public List<Conference> Conferences { get; set; }
+        public List<Division> Divisions { get; set; }
+        public List<Team> Teams { get; set; }
+
         public async Task OnGetAsync()
         {
             //Get a list of all Conferences
-            var Conferences = GetConferences();
-            var AFC = Conferences[0];
-            var NFC = Conferences[1];
-
-            //Get all Divisions by Conference and sort them by name
-            var afcDivisions = GetDivisionsByConference(AFC.ConferenceId);
-            var nfcDivisions = GetDivisionsByConference(NFC.ConferenceId);
+            Conferences = await _context.Conferences.ToListAsync();
+            //List of all Divisions
+            Divisions = await _context.Divisions.ToListAsync();
+            //List of all Teams
+            Teams = await _context.Teams.ToListAsync();
         }
 
-        private List<Conference> GetConferences()
+        //All Divisions by Conference sorted by Name
+        public List<Division> GetDivisionsByConference(string ConferenceId)
         {
-            return _context.Conferences.ToList();
+            return Divisions.Where(div => div.ConferenceId.Equals(ConferenceId)).OrderBy(div => div.Name).ToList();
         }
 
-        private List<Division> GetDivisionsByConference(string conferenceId)
+        //All Teams by Division and sorted by Win and Loss
+        public List<Team> GetTeamsByDivision(string DivisionId)
         {
-            var Divisions = _context.Divisions.ToList();
-
-            return Divisions.Where(div => div.ConferenceId.Equals(conferenceId)).OrderBy(div => div.Name).ToList();
+            return Teams.Where(t => t.DivisionId.Equals(DivisionId)).OrderByDescending(t => t.Win).ToList();
         }
-
-        //private List<Team> GetTeamsByDivision(string divisionId)
-        //{
-        //    var Teams = _context.Teams.ToList();
-
-        //    return Teams.Where
-        //}
     }
 }
