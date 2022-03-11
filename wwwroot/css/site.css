@@ -82,7 +82,7 @@ section.grid a
 }
 section.grid a:hover
 {
-  background-color: cyan;
+  background-color: lightgray;
 }
 
 section.grid a
