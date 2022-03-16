@@ -8,7 +8,7 @@
     <h2 class="display-3"><img src="/image/nfl/nfl.png"> Teams 2019-2020</h2>
     <form class="d-flex">
         <div class="form-group pr-2">
-            <label class="col-form-label" asp-for="FavoriteTeam" class="control-label">Favorite:</label>
+            <label class="col-form-label control-label" asp-for="FavoriteTeam">Favorite:</label>
             <select class="form-control" asp-for="FavoriteTeam" asp-items="Model.AllTeams" onchange="this.form.submit();">
                 <option value="">None</option>
             </select>
