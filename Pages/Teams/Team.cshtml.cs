@@ -20,16 +20,9 @@ namespace League.Pages.Teams
 
         public Team Team { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(string id)
+        public async Task OnGetAsync(string id)
         {
-            if(id == null)
-            {
-                return NotFound();
-            }
-
             Team = await _context.Teams.FindAsync(id);
-
-            return Page();
         }
     }
 }
