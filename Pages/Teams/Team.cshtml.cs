@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using League.Data;
 using League.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -19,10 +20,15 @@ namespace League.Pages.Teams
         }
 
         public Team Team { get; set; }
+        public Division Division { get; set; }
 
         public async Task OnGetAsync(string id)
         {
-            Team = await _context.Teams.FindAsync(id);
+            Team = await _context.Teams
+                .Include(t => t.Division)
+                .Include(t => t.Players)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(t => t.TeamId == id);
         }
     }
 }
