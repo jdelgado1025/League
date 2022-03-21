@@ -1,4 +1,5 @@
-﻿@page
+﻿@page "{id}"
 @model Players.PlayerModel
 @{
+    ViewData["Title"] = $"NFL Player - {Model.Player.Name}";
 }
