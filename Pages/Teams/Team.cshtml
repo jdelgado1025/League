@@ -1,7 +1,7 @@
 ﻿@page "{id}"
 @model Teams.TeamModel
 @{
-    ViewData["Title"] = "NFL Team - " + Html.DisplayFor(model => model.Team.Name);
+    ViewData["Title"] = $"NFL Team - {Model.Team.Name}";
     var id = Model.Team.TeamId;
 }
 
