@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using League.Data;
 using League.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -20,6 +21,7 @@ namespace League.Pages.Players
             _context = context;
         }
 
+        public const string SessionKeyFavorite = "_Favorite";
         public List<Player> Players { get; set; }
 
         [BindProperty (SupportsGet = true)]
@@ -35,6 +37,8 @@ namespace League.Pages.Players
         public SelectList AllPositions { get; set; }
         public SelectList SortBy { get; set; }
 
+        public string Favorite { get; set; }
+
         public async Task OnGetAsync()
         {
             Players = await _context.Players.ToListAsync();
@@ -44,6 +48,20 @@ namespace League.Pages.Players
                           select tms.TeamId;
 
             AllTeams = new SelectList(await teamIds.ToListAsync());
+
+            var playerPos = (from p in _context.Players
+                             select p.Position).Distinct();
+                            
+
+            AllPositions = new SelectList(await playerPos.ToListAsync());
+
+            //string favoriteCookieSession = HttpContext.Session.GetString(SessionKeyFavorite);
+
+            //if (!string.IsNullOrEmpty(favoriteCookieSession))
+            //{
+            //    Favorite = favoriteCookieSession;
+            //}
+                            
         }
     }
 }
