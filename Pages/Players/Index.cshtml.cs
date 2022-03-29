@@ -26,42 +26,82 @@ namespace League.Pages.Players
 
         [BindProperty (SupportsGet = true)]
         public string SelectedTeam { get; set; }
+
         [BindProperty(SupportsGet = true)]
         public string SelectedPosition { get; set; }
+
         [BindProperty(SupportsGet = true)]
         public string SearchString { get; set; }
+
         [BindProperty(SupportsGet = true)]
-        public string SortField { get; set; }
+        public string SortField { get; set; } = "Name";
 
         public SelectList AllTeams { get; set; }
         public SelectList AllPositions { get; set; }
-        public SelectList SortBy { get; set; }
 
         public string Favorite { get; set; }
 
         public async Task OnGetAsync()
         {
-            Players = await _context.Players.ToListAsync();
+            // Generic retrieve all players
+            var players = from p in _context.Players
+                          select p;
 
+            // Modify query based on filters
+            if (!string.IsNullOrEmpty(SelectedTeam))
+            {
+                players = players.Where(p => p.TeamId == SelectedTeam);
+            }
+
+            if (!string.IsNullOrEmpty(SelectedPosition))
+            {
+                players = players.Where(p => p.Position == SelectedPosition);
+            }
+
+            if (!string.IsNullOrEmpty(SearchString))
+            {
+                players = players.Where(p => p.Name.Contains(SearchString));
+            }
+
+            switch (SortField)
+            {
+                case "Number":
+                    players = players.OrderBy(p => p.Number);
+                    break;
+                case "Name":
+                    players = players.OrderBy(p => p.Name);
+                    break;
+                case "Position":
+                    players = players .OrderBy(p => p.Position);
+                    break;
+            }
+
+            //Populate the Teams Select List
             var teamIds = from tms in _context.Teams
                           orderby tms.TeamId
                           select tms.TeamId;
 
             AllTeams = new SelectList(await teamIds.ToListAsync());
 
+            //Populate the Position Select List using distinct values
             var playerPos = (from p in _context.Players
                              select p.Position).Distinct();
                             
 
             AllPositions = new SelectList(await playerPos.ToListAsync());
 
-            //string favoriteCookieSession = HttpContext.Session.GetString(SessionKeyFavorite);
+            //Set favorite if cookie exists
+            string favoriteCookieSession = HttpContext.Session.GetString(SessionKeyFavorite);
 
-            //if (!string.IsNullOrEmpty(favoriteCookieSession))
-            //{
-            //    Favorite = favoriteCookieSession;
-            //}
-                            
+            if (!string.IsNullOrEmpty(favoriteCookieSession))
+            {
+                Favorite = favoriteCookieSession;
+            }
+
+            Players = await players
+                .Include(p => p.Team)
+                .ToListAsync();
+
         }
     }
 }
