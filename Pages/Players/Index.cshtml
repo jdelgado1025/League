@@ -5,28 +5,31 @@
 }
 
 <div class="jumbotron p-2 d-flex justify-content-between">
-    <h2 class="display-3"><img src="/image/nfl/nfl.png"> Players</h2>
+    <h2 class="mr-auto display-3"><img src="/image/nfl/nfl.png"> Players</h2>
     <form class="d-flex">
         <div class="form-group pr-2">
-            <label class="col-form-label" asp-for="SelectedTeam">Team:</label>
+            <label class="col-form-label control-label" asp-for="SelectedTeam">Team:</label>
             <select class="form-control" asp-for="SelectedTeam" asp-items="Model.AllTeams" onchange="this.form.submit();">
                 <option value="">All</option>
             </select>
         </div>
         <div class="form-group pr-2">
-            <label class="col-form-label" asp-for="SelectedPosition">Position:</label>
+            <label class="col-form-label control-label" asp-for="SelectedPosition">Position:</label>
             <select class="form-control" asp-for="SelectedPosition" asp-items="Model.AllPositions" onchange="this.form.submit();">
                 <option value="">All</option>
             </select>
         </div>
         <div class="form-group pr-2">
-            <label class="col-form-label" asp-for="SearchString">Name:</label>
+            <label class="col-form-label control-label" asp-for="SearchString">Name:</label>
             <input class="form-control" type="text" asp-for="SearchString" />
-            <input class="form-control" type="submit" asp-for="SearchString" value="Search" />
+            <input class="form-control btn btn-primary btn-sm my-1" type="submit" asp-for="SearchString" value="Search" />
         </div>
         <div class="form-group">
-            <label class="col-form-label" asp-for="SortField">SortBy:</label>
-            <select class="form-control" asp-for="SortField" asp-items="Model.SortBy" onchange="this.form.submit();">
+            <label class="col-form-label control-label" asp-for="SortField">SortBy:</label>
+            <select class="form-control" asp-for="SortField" onchange="this.form.submit();">
+                <option value="Number">Number</option>
+                <option value="Name">Name</option>
+                <option value="Position">Position</option>
             </select>
         </div>
     </form>
@@ -43,7 +46,7 @@
     </div>
     @foreach (var Player in Model.Players)
     {
-        <a class="@(Player.Depth == 1 ? "d-flex p-1 starter" : "d-flex p-1")" asp-page="/Players/Player" asp-route-id="@Player.PlayerId">
+        <a class="@(Player.Depth == 1 ? "d-flex p-1 starter" : "d-flex p-1") @(Player.Team.TeamId == Model.Favorite ? "favorite" : "")" asp-page="/Players/Player" asp-route-id="@Player.PlayerId">
             <div style="flex: 0 0 10%">@Player.TeamId</div>
             <div style="flex: 0 0 10%">@Player.Number</div>
             <div style="flex: 0 0 25%">@Player.Name</div>
